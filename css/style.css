@@ -1,0 +1,497 @@
+/* css/style.css - Raft, Multi-Paxos & Byzantine Consensus Cluster Lab */
+/* Sistema de diseño Cyber-Distributed HSL (Dark Mode Premium) */
+
+:root {
+    --bg-base: hsl(222, 47%, 7%);
+    --bg-surface: hsl(222, 40%, 11%);
+    --bg-surface-elevated: hsl(222, 35%, 15%);
+    --bg-surface-glass: hsla(222, 40%, 12%, 0.82);
+    
+    --border-color: hsl(220, 25%, 22%);
+    --border-highlight: hsl(190, 90%, 50%);
+    
+    --text-primary: hsl(210, 40%, 98%);
+    --text-secondary: hsl(215, 20%, 70%);
+    --text-muted: hsl(215, 15%, 50%);
+
+    /* Acentos y roles */
+    --accent-leader: hsl(45, 95%, 55%);      /* Oro neón */
+    --accent-candidate: hsl(275, 85%, 65%);  /* Púrpura */
+    --accent-follower: hsl(195, 90%, 55%);   /* Cyan */
+    --accent-crashed: hsl(0, 75%, 55%);      /* Rojo carmesí */
+    --accent-byzantine: hsl(30, 95%, 55%);   /* Ámbar radiante */
+    --accent-success: hsl(150, 85%, 45%);    /* Esmeralda */
+    --accent-link: hsl(210, 30%, 30%);
+
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-glow-leader: 0 0 25px hsla(45, 95%, 55%, 0.45);
+    --shadow-glow-follower: 0 0 20px hsla(195, 90%, 55%, 0.35);
+    --shadow-surface: 0 8px 32px hsla(220, 60%, 4%, 0.6);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* Header principal */
+.app-header {
+    background: var(--bg-surface-glass);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    font-size: 26px;
+    background: linear-gradient(135deg, var(--accent-leader), var(--accent-follower));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h1 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.brand-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.protocol-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.protocol-selector label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.select-input, .input-text {
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.select-input:focus, .input-text:focus {
+    border-color: var(--border-highlight);
+}
+
+/* Botones con estilo Cyberpunk */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, hsl(190, 85%, 45%), hsl(210, 90%, 55%));
+    color: #fff;
+    box-shadow: 0 2px 10px hsla(190, 90%, 50%, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 16px hsla(190, 90%, 50%, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--bg-surface-elevated);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    color: var(--text-primary);
+    border-color: var(--text-muted);
+}
+
+.btn-danger {
+    background: hsla(0, 75%, 45%, 0.2);
+    border-color: var(--accent-crashed);
+    color: hsl(0, 85%, 70%);
+}
+
+.btn-danger:hover {
+    background: var(--accent-crashed);
+    color: #fff;
+}
+
+/* Layout Principal de 3 columnas / Cuadrícula */
+.main-container {
+    display: grid;
+    grid-template-columns: 320px 1fr 360px;
+    gap: 16px;
+    padding: 16px;
+    flex: 1;
+}
+
+/* Paneles contenedores */
+.panel {
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-surface);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    background: hsla(222, 35%, 14%, 0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h2 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-body {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Área Central: Visualizador Topología Canvas + Línea Temporal */
+.center-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.canvas-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    position: relative;
+    height: 480px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#cluster-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+}
+
+.canvas-overlay-stats {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.stat-chip {
+    background: hsla(222, 45%, 9%, 0.85);
+    border: 1px solid var(--border-color);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-chip span.val {
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.canvas-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    background: hsla(222, 45%, 9%, 0.85);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: 0.75rem;
+    pointer-events: none;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.dot.leader { background-color: var(--accent-leader); box-shadow: 0 0 8px var(--accent-leader); }
+.dot.candidate { background-color: var(--accent-candidate); }
+.dot.follower { background-color: var(--accent-follower); }
+.dot.crashed { background-color: var(--accent-crashed); }
+.dot.byzantine { background-color: var(--accent-byzantine); }
+
+/* Línea de tiempo de Lamport & Relojes Vectoriales */
+.timeline-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.timeline-title-row h3 {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+#timeline-canvas {
+    width: 100%;
+    flex: 1;
+    background: hsl(222, 45%, 8%);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+/* Inspector de Write-Ahead Log (WAL) */
+.wal-table-container {
+    overflow-x: auto;
+    max-height: 400px;
+}
+
+.wal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+}
+
+.wal-table th {
+    background: hsla(222, 30%, 18%, 0.8);
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.wal-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid hsla(220, 20%, 20%, 0.5);
+    color: var(--text-primary);
+}
+
+.badge-committed {
+    background: hsla(150, 85%, 45%, 0.2);
+    border: 1px solid var(--accent-success);
+    color: var(--accent-success);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-uncommitted {
+    background: hsla(45, 95%, 55%, 0.15);
+    border: 1px solid var(--accent-leader);
+    color: var(--accent-leader);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+}
+
+/* Inyector de Caos y Controles */
+.chaos-section {
+    margin-bottom: 16px;
+}
+
+.chaos-section h3 {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+}
+
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+input[type="range"] {
+    accent-color: var(--border-highlight);
+    width: 100%;
+    cursor: pointer;
+}
+
+.btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Key-Value Replicated State Machine view */
+.kv-store-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-top: 10px;
+}
+
+.kv-item {
+    background: var(--bg-surface-elevated);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    border-left: 3px solid var(--accent-follower);
+}
+
+/* Consola de Eventos */
+.log-stream {
+    background: hsl(222, 50%, 6%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    height: 180px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.log-entry {
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+.log-entry.info { color: var(--accent-follower); }
+.log-entry.warn { color: var(--accent-leader); }
+.log-entry.error { color: var(--accent-crashed); }
+.log-entry.success { color: var(--accent-success); }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .main-container {
+        grid-template-columns: 280px 1fr;
+    }
+    .right-column {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 860px) {
+    .main-container {
+        grid-template-columns: 1fr;
+    }
+    .right-column {
+        grid-column: auto;
+    }
+}

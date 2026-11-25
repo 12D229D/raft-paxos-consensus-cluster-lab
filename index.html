@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raft, Multi-Paxos & Byzantine Consensus Cluster Lab</title>
+    <!-- Google Fonts: Outfit, Inter, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Encabezado con 1 único <h1> para cumplir con estándares SEO y semántica -->
+    <header class="app-header">
+        <div class="brand-wrapper">
+            <span class="brand-icon">⚡</span>
+            <div>
+                <h1>Raft, Multi-Paxos & Byzantine Consensus Cluster Lab</h1>
+                <div class="brand-subtitle">Simulador Formal de Algoritmos Distribuidos & Relojes Vectoriales</div>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <div class="protocol-selector">
+                <label for="protocol-select">Protocolo:</label>
+                <select id="protocol-select" class="select-input">
+                    <option value="raft" selected>Raft (Ongaro & Ousterhout)</option>
+                    <option value="paxos">Multi-Paxos (Leslie Lamport)</option>
+                    <option value="pbft">PBFT Byzantine Fault Tolerance</option>
+                </select>
+            </div>
+            <button id="btn-export-sql" class="btn btn-secondary">
+                <span>💾 Exportar WAL SQL</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Disposición Principal en 3 Columnas -->
+    <main class="main-container">
+        <!-- Columna Izquierda: Inyector de Caos y Controles de Red -->
+        <aside class="panel left-column">
+            <div class="panel-header">
+                <h2><span>🧪 Inyector de Caos & Red</span></h2>
+            </div>
+            <div class="panel-body">
+                <!-- Latencia y Jitter -->
+                <div class="chaos-section">
+                    <h3>Latencia del Enlace</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Retardo Base:</span>
+                            <span id="latency-val" class="font-mono">60 ms</span>
+                        </div>
+                        <input type="range" id="latency-slider" min="10" max="500" value="60">
+                    </div>
+                </div>
+
+                <!-- Pérdida de paquetes -->
+                <div class="chaos-section">
+                    <h3>Pérdida de Paquetes</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Drop Rate:</span>
+                            <span id="drop-val" class="font-mono">0%</span>
+                        </div>
+                        <input type="range" id="drop-slider" min="0" max="80" value="0">
+                    </div>
+                </div>
+
+                <!-- Particiones de red (Split-Brain) -->
+                <div class="chaos-section">
+                    <h3>Partición de Red (Split-Brain)</h3>
+                    <div class="btn-grid">
+                        <button id="btn-partition-split" class="btn btn-danger">
+                            <span>⚡ Partir Clúster</span>
+                        </button>
+                        <button id="btn-heal-network" class="btn btn-primary">
+                            <span>🌐 Sanar Enlaces</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Degradación de Nodo -->
+                <div class="chaos-section">
+                    <h3>Control de Fallos de Nodo</h3>
+                    <div class="btn-grid">
+                        <button id="btn-crash-node" class="btn btn-danger">
+                            <span>💥 Colapsar / Levantar</span>
+                        </button>
+                        <button id="btn-byzantine-toggle" class="btn btn-secondary">
+                            <span>🎭 Modo Bizantino</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Emulador de Comandos de Cliente -->
+                <div class="chaos-section">
+                    <h3>Envío de Transacción Cliente</h3>
+                    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                        <input type="text" id="cmd-key" class="input-text" placeholder="Clave (k)" value="counter" style="width: 50%;">
+                        <input type="text" id="cmd-val" class="input-text" placeholder="Valor (v)" value="42" style="width: 50%;">
+                    </div>
+                    <button id="btn-send-command" class="btn btn-primary" style="width: 100%;">
+                        <span>🚀 SET clave = valor</span>
+                    </button>
+                </div>
+
+                <!-- Flujo de eventos / Consola -->
+                <div class="chaos-section" style="margin-bottom: 0;">
+                    <h3>Bitácora de Eventos</h3>
+                    <div id="log-stream" class="log-stream"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Columna Central: Topología de Clúster Canvas + Diagrama Espacio-Temporal -->
+        <section class="center-column">
+            <!-- Lienzo de Topología 2D -->
+            <div class="canvas-card">
+                <canvas id="cluster-canvas"></canvas>
+
+                <!-- Overlay de Métricas -->
+                <div class="canvas-overlay-stats">
+                    <div class="stat-chip">
+                        <span>Quórum:</span>
+                        <span class="val" id="stat-quorum">Mayoría (3/5)</span>
+                    </div>
+                    <div class="stat-chip">
+                        <span>En Línea:</span>
+                        <span class="val" id="stat-nodes-alive">5 Nodos</span>
+                    </div>
+                </div>
+
+                <!-- Leyenda de Roles -->
+                <div class="canvas-legend">
+                    <div class="legend-item"><div class="dot leader"></div><span>Líder</span></div>
+                    <div class="legend-item"><div class="dot candidate"></div><span>Candidato</span></div>
+                    <div class="legend-item"><div class="dot follower"></div><span>Seguidor</span></div>
+                    <div class="legend-item"><div class="dot byzantine"></div><span>Bizantino</span></div>
+                    <div class="legend-item"><div class="dot crashed"></div><span>Caído</span></div>
+                </div>
+            </div>
+
+            <!-- Línea de Tiempo de Lamport / Relojes Vectoriales -->
+            <div class="timeline-card">
+                <div class="timeline-title-row">
+                    <h3>Diagrama Espacio-Temporal Causal (Relojes de Lamport)</h3>
+                    <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">Flechas = RPC en tránsito</span>
+                </div>
+                <canvas id="timeline-canvas"></canvas>
+            </div>
+        </section>
+
+        <!-- Columna Derecha: Inspector de WAL & Replicated State Machine -->
+        <aside class="panel right-column">
+            <div class="panel-header">
+                <h2 id="selected-node-title"><span>📋 Inspector de Nodo</span></h2>
+            </div>
+            <div class="panel-body">
+                <!-- Reloj Vectorial del Nodo -->
+                <div class="chaos-section">
+                    <h3>Reloj Causal</h3>
+                    <div style="background: var(--bg-surface-elevated); padding: 8px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.76rem;">
+                        <div><strong>Lamport TS:</strong> <span id="lamport-time-display">0</span></div>
+                        <div style="margin-top: 4px;"><strong>Vector Clock:</strong> <span id="vector-clock-display" style="color: var(--accent-follower);">[]</span></div>
+                    </div>
+                </div>
+
+                <!-- Write-Ahead Log Inspector -->
+                <div class="chaos-section">
+                    <h3>Write-Ahead Log (WAL Replicado)</h3>
+                    <div class="wal-table-container">
+                        <table class="wal-table">
+                            <thead>
+                                <tr>
+                                    <th>Índice</th>
+                                    <th>Término</th>
+                                    <th>Comando</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wal-table-body">
+                                <!-- Filas dinámicas generadas en app.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Máquina de Estados Replicada (Key-Value Store) -->
+                <div class="chaos-section" style="margin-bottom: 0;">
+                    <h3>Máquina de Estados (Key-Value Store)</h3>
+                    <div id="kv-store-container" class="kv-store-list">
+                        <!-- Claves y valores comprometidos -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Scripts de la Aplicación -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
